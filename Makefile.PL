@@ -21,6 +21,7 @@ requires 'HTTP::Cookies';
 requires 'RPC::XML::Client';
 
 test_requires 'Test::More';
+test_requires 'Crypt::SSLeay';
 
 extra_tests;
 

@@ -64,9 +64,12 @@ is     $a->bugzilla_uri => 'https://bugzilla.redhat.com/xmlrpc.cgi', 'uri ok';
 
 =cut
 
-my $ver = $a->bugzilla_rpc->simple_request('Bugzilla.version')->{version};
+SKIP: {
+    skip 'No network tests allowed', 1 if $ENV{NO_NET_TESTS};
 
-ok $ver, 'queried RH bugzilla version successfully';
+    my $ver = $a->bugzilla_rpc->simple_request('Bugzilla.version')->{version};
+    ok $ver, 'queried RH bugzilla version successfully';
+}
 
 =head2 Named role with login info
 

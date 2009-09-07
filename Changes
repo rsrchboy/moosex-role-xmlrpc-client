@@ -1,5 +1,9 @@
 Revision history for MooseX-Role-XMLRPC-Client
 
+0.03 Mon Apr 27 2009
+- add Crypt::SSLeay as a test_requires
+- allow NO_NET_TESTS to be set to skip any/all tests that require net access
+
 0.02 Sat Apr 25 2009
 - clean up our error/fault handlers
 - add a live test
