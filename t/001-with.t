@@ -28,7 +28,7 @@ This module defines the following tests.
 
 =cut
 
-use Test::More tests => 14;
+use Test::More tests => 15;
 
 =head2 Named role without login info
 
@@ -59,6 +59,14 @@ isa_ok $a->bugzilla_rpc => 'RPC::XML::Client';
 
 isa_ok $a->bugzilla_uri => 'URI'; 
 is     $a->bugzilla_uri => 'https://bugzilla.redhat.com/xmlrpc.cgi', 'uri ok';
+
+=head2 Named role, no login info, basic BZ live test
+
+=cut
+
+my $ver = $a->bugzilla_rpc->simple_request('Bugzilla.version')->{version};
+
+ok $ver, 'queried RH bugzilla version successfully';
 
 =head2 Named role with login info
 

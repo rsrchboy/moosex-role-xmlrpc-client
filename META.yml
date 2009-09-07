@@ -5,7 +5,7 @@ author:
 build_requires:
   Test::More: 0
 distribution_type: module
-generated_by: 'Module::Install version 0.77'
+generated_by: 'Module::Install version 0.80'
 license: perl
 meta-spec:
   url: http://module-build.sourceforge.net/META-spec-v1.4.html
@@ -15,6 +15,7 @@ no_index:
   directory:
     - inc
     - t
+    - xt
 requires:
   HTTP::Cookies: 0
   MooseX::Role::Parameterized: 0.02
@@ -25,4 +26,5 @@ requires:
   namespace::clean: 0
 resources:
   license: http://dev.perl.org/licenses/
-version: 0.01
+  repository: http://hg.fedoraproject.org//hg/camelus
+version: 0.02

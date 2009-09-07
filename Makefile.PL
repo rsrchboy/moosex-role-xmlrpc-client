@@ -5,6 +5,10 @@ all_from 'lib/MooseX/Role/XMLRPC/Client.pm';
 author   'Chris Weyl <cweyl@alumni.drew.edu>';
 license  'perl';
 
+no_index 'directory' => xt;
+
+repository 'http://hg.fedoraproject.org//hg/camelus';
+
 requires 'namespace::clean';
 
 #requires 'Moose::Role';

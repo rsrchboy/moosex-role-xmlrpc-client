@@ -28,7 +28,7 @@ use RPC::XML::Client;
 
 use namespace::clean -except => 'meta';
 
-our $VERSION = 0.01;
+our $VERSION = '0.02';
 
 parameter name => (is => 'ro', isa => Str, default => 'xmlrpc' );
 parameter uri  => (is => 'ro', isa => Uri, coerce => 1, predicate => 'has_uri');
@@ -42,9 +42,6 @@ parameter cookie_jar
 # traits, if any, for our attributes
 parameter traits 
     => (is => 'ro', isa => 'ArrayRef[Str]', default => sub { [] });
-
-#parameter userid     => (@pdefaults, isa => Str  );
-#parameter passwd     => (@pdefaults, isa => Str  );
 
 role {
     my $p = shift @_;
@@ -107,13 +104,12 @@ role {
     #has $name.'_cookie_jar' => (is => 'ro', isa => 'Str', required => 1);
     #has $name.'_' => ( is => 'ro', isa => 'Str', required => 1 );
 
+    my $uri_method = $a->('uri');
+
     # create our RPC::XML::Client appropriately
     method $b->('rpc') => sub {
         my $self = shift @_;
     
-        #my $name = $p->name;
-        my $uri_method = $a->('uri');
-
         # twice to keep warnings from complaining...
         local $RPC::XML::ENCODING;
         $RPC::XML::ENCODING = 'UTF-8';
@@ -122,11 +118,9 @@ role {
 
         # error bits - FIXME - we could probably do this better... 
         $rpc->error_handler(sub { confess shift                       });
-        $rpc->fault_handler(sub { confess shift->{faultString}->value });
+        $rpc->fault_handler(sub { confess shift->string });
 
-        # bugzilla sure likes its cookies...
         #$rpc->useragent->cookie_jar($self->$name.'_cookie_jar');
-
         $rpc->useragent->cookie_jar({});
 
         return $rpc;
