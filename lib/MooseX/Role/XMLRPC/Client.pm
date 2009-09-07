@@ -28,7 +28,7 @@ use RPC::XML::Client;
 
 use namespace::clean -except => 'meta';
 
-our $VERSION = '0.03';
+our $VERSION = '0.04';
 
 parameter name => (is => 'ro', isa => Str, default => 'xmlrpc' );
 parameter uri  => (is => 'ro', isa => Uri, coerce => 1, predicate => 'has_uri');

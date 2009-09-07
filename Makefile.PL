@@ -24,7 +24,7 @@ test_requires 'Test::More';
 test_requires 'Crypt::SSLeay';
 
 extra_tests;
-
+auto_provides;
 auto_install;
 
 WriteAll;

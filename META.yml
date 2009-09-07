@@ -20,6 +20,10 @@ no_index:
     - inc
     - t
     - xt
+provides:
+  MooseX::Role::XMLRPC::Client:
+    file: lib/MooseX/Role/XMLRPC/Client.pm
+    version: 0.04
 requires:
   HTTP::Cookies: 0
   MooseX::Role::Parameterized: 0.02
@@ -31,4 +35,4 @@ requires:
 resources:
   license: http://dev.perl.org/licenses/
   repository: http://hg.fedoraproject.org//hg/camelus
-version: 0.03
+version: 0.04

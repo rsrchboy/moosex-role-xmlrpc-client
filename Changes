@@ -1,5 +1,8 @@
 Revision history for MooseX-Role-XMLRPC-Client
 
+0.04 Fri May  1 2009
+- enable auto_provides in Makefile.PL
+
 0.03 Mon Apr 27 2009
 - add Crypt::SSLeay as a test_requires
 - allow NO_NET_TESTS to be set to skip any/all tests that require net access
