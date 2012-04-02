@@ -19,6 +19,7 @@ package MooseX::Role::XMLRPC::Client;
 
 use MooseX::Role::Parameterized;
 
+use MooseX::AttributeShortcuts;
 use MooseX::Types::Moose       qw{ Str Bool };
 use MooseX::Types::URI         ':all';
 use MooseX::Types::Path::Class ':all';
@@ -33,32 +34,37 @@ our $VERSION = '0.04';
 parameter name => (is => 'ro', isa => Str, default => 'xmlrpc' );
 parameter uri  => (is => 'ro', isa => Uri, coerce => 1, predicate => 'has_uri');
 
-parameter login_info 
+parameter login_info
     => (is => 'ro', isa => Bool, predicate => 'has_login_info', default => 1);
 
 parameter cookie_jar
     => (is => 'ro', isa => File, predicate => 'has_cookie_jar', coerce => 1);
 
 # traits, if any, for our attributes
-parameter traits 
-    => (is => 'ro', isa => 'ArrayRef[Str]', default => sub { [] });
+parameter traits => (
+    traits  => ['Array'],
+    is      => 'ro',
+    isa     => 'ArrayRef[Str]',
+    default => sub { [] },
+    handles => { all_traits => 'elements' },
+);
 
 role {
     my $p = shift @_;
 
     my $name = $p->name;
 
-    my @defaults = (traits => $p->traits, is => 'rw', lazy_build => 1);
+    my $traits = [ Shortcuts, $p->all_traits ];
+    my @defaults = (traits => $traits, is => 'rw', lazy_build => 1);
 
     # generate our attribute & builder names... nicely sequential tho :)
     my $a = sub {             $name . '_' . shift @_ };
     my $b = sub { '_build_' . $name . '_' . shift @_ };
 
-    
     if ($p->login_info) {
 
         has $a->('userid') => (@defaults, isa => Str);
-        has $a->('passwd') => (@defaults, isa => 'Str');
+        has $a->('passwd') => (@defaults, isa => Str);
 
         requires $b->('userid');
         requires $b->('passwd');
@@ -73,54 +79,33 @@ role {
     if ($p->has_uri) { method $b->('uri') => sub { $p->uri } }
     else             { requires $b->('uri')                  }
 
-
-    if ($p->has_cookie_jar) { 
-
-        # create w/provided default
-        has $a->('cookie_jar') => (
-            is        => 'ro', 
-            isa       => File, 
-            coerce    => 1, 
-            predicate => 'has_cookie_jar',
-            default   => $p->cookie_jar,
-        );
-
-        #has $a->('cookie_jar')    => (@defaults, isa => File, coerce => 1);
-        #method $b->('cookie_jar') => sub { $p->cookie_jar } 
-    }
-    else {
-        
-        # create w/o default
-        has $a->('cookie_jar') => (
-            is        => 'ro', 
-            isa       => File, 
-            coerce    => 1, 
-            predicate => 'has_cookie_jar',
-        );
-    }
+    has $a->('cookie_jar') => (
+        traits    => $traits,
+        is        => 'ro',
+        isa       => File,
+        coerce    => 1,
+        predicate => 1,
+        ( $p->has_cookie_jar ? (default => $p->cookie_jar) : () ),
+    );
 
     has $a->('rpc') => (@defaults, isa => 'RPC::XML::Client');
-    
-    #has $name.'_cookie_jar' => (is => 'ro', isa => 'Str', required => 1);
-    #has $name.'_' => ( is => 'ro', isa => 'Str', required => 1 );
 
     my $uri_method = $a->('uri');
 
     # create our RPC::XML::Client appropriately
     method $b->('rpc') => sub {
         my $self = shift @_;
-    
+
         # twice to keep warnings from complaining...
         local $RPC::XML::ENCODING;
         $RPC::XML::ENCODING = 'UTF-8';
 
         my $rpc = RPC::XML::Client->new($self->$uri_method);
 
-        # error bits - FIXME - we could probably do this better... 
-        $rpc->error_handler(sub { confess shift                       });
+        # error bits - FIXME - we could probably do this better...
+        $rpc->error_handler(sub { confess shift         });
         $rpc->fault_handler(sub { confess shift->string });
 
-        #$rpc->useragent->cookie_jar($self->$name.'_cookie_jar');
         $rpc->useragent->cookie_jar({});
 
         return $rpc;
@@ -143,7 +128,7 @@ MooseX::Role::XMLRPC::Client - provide the needed bits to be a XML-RPC client
     # ...
 
     # we don't want to keep any login information here
-    with 'MooseX::Role::XMLRPC::Client' => { 
+    with 'MooseX::Role::XMLRPC::Client' => {
         name => 'bugzilla',
         uri  => 'https://bugzilla.redhat.com/xmlrpc.cgi',
         login_info => 0,
@@ -157,7 +142,7 @@ MooseX::Role::XMLRPC::Client - provide the needed bits to be a XML-RPC client
 
     sub _build_foo_userid { 'userid'   }
     sub _build_foo_passwd { 'passw0rd' }
-    
+
     sub foo_login  { 'do login magic here..'   }
     sub foo_logout { 'do logout magic here...' }
 
@@ -197,22 +182,11 @@ Right now, the best documentation can be found in the tests.
 
 L<RPC::XML::Client>, L<Moose::Role>, L<MooseX::Role::Parameterized>.
 
-This package is part of the Fedora Project's Perl SIG work.  For more
-information, see:
-
-    L<http://fedoraproject.org>
-    L<http://fedoraproject.org/wiki/Perl>
-    L<http://camelus.fedorahosted.org>
-
-=head1 TODO
-
-Documentation.  Clearly.  :-)
-
 =head1 BUGS AND LIMITATIONS
 
 There are no known bugs in this module.
 
-Please report problems to Chris Weyl <cweyl@alumni.drew.edu>, or (preferred) 
+Please report problems to Chris Weyl <cweyl@alumni.drew.edu>, or (preferred)
 to this package's RT tracker at <bug-MooseX-Role-XMLRPC-Client@rt.cpan.org>.
 
 Patches are welcome.
@@ -237,7 +211,7 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 Lesser General Public License for more details.
 
 You should have received a copy of the GNU Lesser General Public
-License along with this library; if not, write to the 
+License along with this library; if not, write to the
 
     Free Software Foundation, Inc.
     59 Temple Place, Suite 330
