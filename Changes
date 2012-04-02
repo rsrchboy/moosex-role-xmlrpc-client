@@ -1,5 +1,10 @@
 Revision history for MooseX-Role-XMLRPC-Client
 
+0.05 Mon Apr  2 2012
+- properly quote 'xt' in Makefile.PL (RT#76231)
+- fix cookie_jar predicates -- was always being created as has_cookie_jar,
+  regardless of the parameterized name
+
 0.04 Fri May  1 2009
 - enable auto_provides in Makefile.PL
 
