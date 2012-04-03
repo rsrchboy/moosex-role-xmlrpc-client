@@ -11,7 +11,7 @@ repository 'http://hg.fedoraproject.org//hg/camelus';
 
 requires 'namespace::clean';
 
-#requires 'Moose::Role';
+requires 'MooseX::AttributeShortcuts' => 0.009;
 requires 'MooseX::Role::Parameterized' => 0.02;
 requires 'MooseX::Types';
 requires 'MooseX::Types::URI';
