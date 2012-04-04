@@ -29,6 +29,7 @@ This module defines the following tests.
 =cut
 
 use Test::More tests => 15;
+use Test::Requires 'LWP::Protocol::https';
 
 =head2 Named role without login info
 
